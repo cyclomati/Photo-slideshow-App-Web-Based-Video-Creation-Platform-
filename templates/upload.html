@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Images</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .drop-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .drop-area.hover {
+            border-color: #2185d0;
+        }
+        .file-name {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <br>
+    <h1>Upload Images</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+        <div class="drop-area" id="dropArea">
+            <p>Drag & Drop images here or click to select</p>
+            <input type="file" name="image" id="fileInput" accept="image/*" multiple style="display: none;">
+        </div>
+        <div class="file-name" id="fileName"></div>
+        <button style="margin-left: 10px;" type="submit">Upload</button>
+    </form>
+    <div class="mt-4">
+    <br><br> <a style="margin-left: 10px;" class="btn btn-primary" href="/home">Home</a>
+    </div>
+
+    <script>
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileName');
+        const uploadForm = document.getElementById('uploadForm');
+
+        
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('hover');
+        });
+
+        
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('hover');
+        });
+
+        
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('hover');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateFileNameDisplay();
+            }
+        });
+
+       
+        dropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        
+        fileInput.addEventListener('change', () => {
+            updateFileNameDisplay();
+        });
+
+        
+        function updateFileNameDisplay() {
+            const files = fileInput.files;
+            if (files.length > 0) {
+                let filenames = '';
+                for (let i = 0; i < files.length; i++) {
+                    filenames += files[i].name;
+                    if (i < files.length - 1) {
+                        filenames += ', ';
+                    }
+                }
+                fileNameDisplay.textContent = filenames;
+            } else {
+                fileNameDisplay.textContent = '';
+            }
+        }
+    </script>
+
+    <style>
+        
+        .file-name {
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</body>
+</html>

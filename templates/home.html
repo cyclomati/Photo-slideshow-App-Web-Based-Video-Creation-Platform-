@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Welcome, {{ name }}</h1>
+        <p>Your Username: {{ username }}</p>
+        <p>Your User ID: {{ user_id }}</p>
+        <p>Your Email: {{ useremail }}</p>
+
+        <br>
+        
+        <a href="/upload_audio" class="btn btn-success mr-3">Upload Audio</a>
+        <a href="/upload" class="btn btn-success mr-2">Upload Images</a>
+        <a href="/create" class="btn btn-primary">Create a Video</a>
+        <a href="/logout" class="btn btn-primary">Logout</a>
+        
+        <br> <br> <br>
+        
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search..." id="search-input">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="search-button">Search</button>
+            </div>
+        </div>
+    
+        <br>
+        <h2 class="mt-5">Your Images:</h2> <br>
+
+        <div class="row mt-3" id="image-container">
+            {% for img_with_metadata in images_with_metadata %}
+            <div class="col-md-3">
+                <div class="card mb-3">
+                    <img src="data:image/jpeg;base64,{{ img_with_metadata[0] }}" class="card-img-top" alt="Image">
+                    <div class="card-body">
+                        <p class="card-text"> {{ img_with_metadata[1] }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <br> 
+        <h4 class="mt-5"> Audio:</h4>
+        <ul id="audio-list">
+            {% for audio_base64, metadata in audio_base64_list %}
+                <li>
+                    <p>{{ metadata }}</p>
+                    <audio controls>
+                        <source src="data:audio/wav;base64,{{ audio_base64 }}" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </li>
+            {% endfor %}
+        </ul>
+    
+        <br> <br> <br>
+        
+        <div class="mt-4">
+            <a href="/upload" class="btn btn-success mr-2">Upload Images</a>
+           
+            <a href="/upload_audio" class="btn btn-success mr-3">Upload Audio</a>
+            <a href="/create" class="btn btn-primary">Create a Video</a>
+        </div>
+        <br> <br> <br>
+        <a href="/logout" class="btn btn-primary">Logout</a>
+    </div>
+    <br> <br> <br> <br> 
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <script>        
+        document.getElementById('search-input').addEventListener('input', function() {
+            var searchTerm = this.value.trim().toLowerCase();
+            var imageCards = document.querySelectorAll('#image-container .card');
+            var audioItems = document.querySelectorAll('#audio-list li');
+
+            imageCards.forEach(function(card) {
+                var textContent = card.textContent.toLowerCase();
+                if (textContent.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            audioItems.forEach(function(item) {
+                var textContent = item.textContent.toLowerCase();
+                if (textContent.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

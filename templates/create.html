@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .tick-box {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+        .card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            margin-bottom: 20px;
+            
+            width: 400px; 
+        }
+        .card-body {
+            flex-grow: 1;
+        }
+        
+        .card img {
+            max-width: 100%;
+            height: auto; 
+        }
+    </style>
+</head>
+<body>
+
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+    <div class="container mt-5">
+        
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-4">
+                    <a href="/home" class="btn btn-primary">Home</a>
+                </div>
+                <div class="col-md-4">
+                    <a href="/create" class="btn btn-primary">Create Page</a>
+                </div>
+                <div class="col-md-4">
+                    <a href="/logout" class="btn btn-primary">Logout</a>
+                </div>
+            </div>
+            <br>
+            
+        </div>
+        
+
+        <p>Your User ID: {{ user_id }}</p>
+        
+        <br> <br>
+        
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search..." id="search-input">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="search-button">Search</button>
+            </div>
+        </div>
+
+        
+        <h4 class="mt-5">Uploaded Images:</h2>
+        <div class="row mt-3">
+            
+            <form id="image-form">
+                
+       
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Set Duration per image (seconds)</span>
+                    </div>
+                    <input type="number" class="form-control" id="duration-per-image" min="0" value="1">
+                </div>
+                
+                {% for img_with_metadata in images_with_metadata %}
+                <div class="col-md-3">
+                    <div class="card mb-3">
+                        <img src="data:image/jpeg;base64,{{ img_with_metadata[0] }}" class="card-img-top" alt="Image" style="width: 150%; max-width: 400px;">
+                        <div class="card-body">
+                            <input type="checkbox" class="tick-box" name="selected_images" value="{{ img_with_metadata[1] }}">
+                            <p class="card-text">{{ img_with_metadata[1] }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </form>
+        </div>
+       
+        <h4 class="mt-5">Select Audio:</h4>
+        <ul>
+            {% for audio_base64, metadata in audio_base64_list %}
+                <li>
+                    <input type="checkbox" class="tick-box" name="selected_audio" value="{{ metadata }}">
+                    <p>{{ metadata }}</p>
+                    <audio controls>
+                        <source src="data:audio/wav;base64,{{ audio_base64 }}" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </li>
+            {% endfor %}
+        </ul>
+        
+      
+        <br> 
+        <div class="mt-4">
+            <button id="create-btn" class="btn btn-primary">Create Video</button>
+        </div>
+        <br> 
+       
+        <h1>Preview and Download Video(Scroll Down)</h1>
+        <br> 
+        <h2>Preview Video</h2>
+        <video controls>
+            <source src="data:video/mp4;base64,{{ video_base64 }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <br> <br> <br>
+        <h2>Download Video</h2>
+        <a href="/download-video" class="btn btn-primary">Download Video</a>
+
+        <br> <br>
+        <a href="/home" class="btn btn-primary">Home</a>
+        <br> <br>
+        
+        <a href="/create"  class="btn btn-primary">Create Page</a>
+        <br> <br>
+        <a href="/logout" class="btn btn-primary">Logout</a>
+
+       
+    </div>
+
+
+    <br>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('create-btn').addEventListener('click', function() {
+            var selectedImagesMetadata = [];
+            var checkboxes = document.querySelectorAll('input[name="selected_images"]:checked');
+            checkboxes.forEach(function(checkbox) {
+                var parentDiv = checkbox.parentNode.parentNode; 
+                var metadata = parentDiv.querySelector('p').textContent;
+                selectedImagesMetadata.push(metadata);
+            });
+
+            var selectedAudioMetadata = [];
+            var audioCheckboxes = document.querySelectorAll('input[name="selected_audio"]:checked');
+            audioCheckboxes.forEach(function(checkbox) {
+                selectedAudioMetadata.push(checkbox.value);
+            });
+
+            var durationPerImage = document.getElementById('duration-per-image').value;
+
+            
+            if (selectedImagesMetadata.length > 0 || selectedAudioMetadata.length > 0) {
+
+                var metadataInput = document.createElement('input');
+                metadataInput.setAttribute('type', 'hidden');
+                metadataInput.setAttribute('name', 'metadata');
+                metadataInput.setAttribute('value', selectedImagesMetadata.join(','));
+
+                var durationInput = document.createElement('input');
+                durationInput.setAttribute('type', 'hidden');
+                durationInput.setAttribute('name', 'duration_per_image');
+                durationInput.setAttribute('value', durationPerImage);
+
+                var audioMetadataInput = document.createElement('input');
+                audioMetadataInput.setAttribute('type', 'hidden');
+                audioMetadataInput.setAttribute('name', 'audio_metadata');
+                audioMetadataInput.setAttribute('value', selectedAudioMetadata.join(','));
+
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/create';
+                form.appendChild(metadataInput);
+                form.appendChild(audioMetadataInput);
+                form.appendChild(durationInput)
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+
+      
+        document.getElementById('search-input').addEventListener('input', function() {
+        var searchTerm = this.value.trim().toLowerCase();
+        var cards = document.querySelectorAll('.card');
+        var audioItems = document.querySelectorAll('ul li');
+
+        cards.forEach(function(card) {
+            var textContent = card.textContent.toLowerCase();
+            if (textContent.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        audioItems.forEach(function(item) {
+            var textContent = item.textContent.toLowerCase();
+            if (textContent.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+</script>
+</body>
+</html>

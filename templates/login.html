@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Login</h1>
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="border p-3">
+                    <h2>Sign In</h2>
+                    <form action="/login" method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username:</label>
+                            <input type="text" id="username" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password:</label>
+                            <div class="input-group">
+                                <input type="password" id="password_login" name="password" class="form-control" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary" type="button" onclick="togglePasswordVisibility('password_login')">Show</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="border p-3">
+                    <h2>Sign Up</h2>
+                    <form action="/login" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name:</label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="username_signup" class="form-label">Username:</label>
+                            <input type="text" id="username_signup" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password_signup" class="form-label">Password:</label>
+                            <div class="input-group">
+                                <input type="password" id="password_signup" name="password" class="form-control" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary" type="button" onclick="togglePasswordVisibility('password_signup')">Show</button>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="signup" value="1">
+                        <button type="submit" class="btn btn-primary">Sign Up</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3">
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function togglePasswordVisibility(passwordFieldId) {
+            var passwordInput = document.getElementById(passwordFieldId);
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                document.querySelector("[onclick='togglePasswordVisibility(\""+ passwordFieldId +"\")']").textContent = "Hide";
+            } else {
+                passwordInput.type = "password";
+                document.querySelector("[onclick='togglePasswordVisibility(\""+ passwordFieldId +"\")']").textContent = "Show";
+            }
+        }
+    </script>
+</body>
+</html>
